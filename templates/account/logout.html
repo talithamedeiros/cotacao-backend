@@ -1,0 +1,26 @@
+{% extends 'account/base.html' %} 
+{% block content %}
+<div class="card card-border-color card-border-color-primary">
+    <div class="card-header">
+        <img src="/static/custom/img/logomarca.png" alt="logo" width="83" height="59" class="logo-img">
+        <span class="splash-description">Você tem certeza que deseja sair ?</span>
+    </div>
+    <div class="card-body">
+        <form id="sign_out" method="POST" action="{% url 'account_logout' %}"> {% csrf_token %} 
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> 
+            {% endif %}
+            <div class="login-form"></div>
+            <div class="form-group row login-submit">
+                <div class="col-6">
+                    <a class="btn btn-secondary btn-xl" href="{% url 'dashboard' %}">Voltar</a>
+                </div>
+                <div class="col-6">
+                    <button data-dismiss="modal" type="submit" class="btn btn-primary btn-xl">Sair</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
