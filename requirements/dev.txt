@@ -1,0 +1,6 @@
+-r base.txt
+
+#devlibs
+django-stackoverflow-trace==0.0.4
+model-mommy==1.6.0
+django-widget-tweaks==1.4.3

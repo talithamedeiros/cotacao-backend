@@ -3,14 +3,12 @@
 ##################################################
 #				DJANGO IMPORTS                   #
 ##################################################
-from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import render,redirect
+from django.urls import reverse, reverse_lazy
+from django.shortcuts import render, redirect
 from django.views.generic import RedirectView, View, UpdateView, ListView, DetailView, DeleteView
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
-from django.http import (HttpResponse,
-                         HttpResponseForbidden,
-                         HttpResponseBadRequest)
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.forms import formset_factory
 from django.db.models import Count, Avg
 import pandas as pd

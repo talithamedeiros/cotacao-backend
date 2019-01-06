@@ -21,3 +21,7 @@ class ConvertTokenSerializer(serializers.Serializer):
 
 class AppRegistration(serializers.Serializer):
     registration_id = serializers.CharField(required=True, max_length=100)
+
+
+class CotacaoSeguroSerializer(serializers.Serializer):
+    valor_bike = serializers.DecimalField(max_digits=14, decimal_places=2)

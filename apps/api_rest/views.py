@@ -1,3 +1,5 @@
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -12,7 +14,7 @@ from django.db.models import Avg, Count
 from django.db import IntegrityError, transaction, connection
 
 from oauth2_provider.models import Application, AccessToken
-from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope, OAuth2Authentication
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope, OAuth2Authentication
 
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -32,7 +34,7 @@ import re
 
 from apps.message_core.views import EmailThread, Sms
 from apps.api_rest import serializers
-from apps.default.models import Usuario
+from apps.default.models import Usuario, Pedido, Proposta
 
 
 class FacebookLogin(SocialLoginView):
@@ -169,3 +171,51 @@ class AppRegistration(generics.GenericAPIView):
             user.save()
             return Response(response,status=200)
         return Response(response,status=500)
+
+
+def get_valor_seguro(porcentagem, valor_bike):
+    return (valor_bike * porcentagem) / 100
+
+
+
+class CotarSeguro(generics.GenericAPIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.CotacaoSeguroSerializer
+
+    def post(self, request, format=None):
+        serializer = serializers.CotacaoSeguroSerializer(data=request.data)
+        if serializer.is_valid():
+
+            valor_bike = serializer.data.get('valor_bike')
+
+            pedido = Pedido()
+            pedido.usuario = self.request.user
+            pedido.valor_bike = valor_bike
+            pedido.save()
+            
+            valor_seguro = 0
+            is_atendido = True
+
+            if '2000.00' <= valor_bike and '4999.99' >= valor_bike:
+                valor_seguro = get_valor_seguro(2, float(valor_bike))
+            elif '5000.00' <= valor_bike and '8999.99' >= valor_bike:
+                valor_seguro = get_valor_seguro(5, float(valor_bike))
+            elif '9000.00' <= valor_bike and '11999.99' >= valor_bike:
+                valor_seguro = get_valor_seguro(10, float(valor_bike))
+            elif '12000.00' >= valor_bike:
+                valor_seguro = get_valor_seguro(18, float(valor_bike))
+            else:
+                message = "2"
+                is_atendido = False
+
+            if valor_seguro > 0:
+                proposta = Proposta()
+                proposta.usuario = self.request.user
+                proposta.preco_seguro = valor_seguro
+                proposta.save()
+
+            pedido = Pedido.objects.filter(pk=pedido.pk).update(is_atendido=is_atendido)
+
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)

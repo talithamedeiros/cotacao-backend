@@ -3,8 +3,7 @@
 ##################################################
 #				DJANGO IMPORTS                   #
 ##################################################
-from django.conf.urls import include, url
-from django.conf.urls.i18n import i18n_patterns
+from django.urls import include, path, re_path
 from django.contrib.auth.decorators import login_required
 ##################################################
 
@@ -14,12 +13,11 @@ from django.contrib.auth.decorators import login_required
 from . import views
 ##################################################
 
-
 urlpatterns = (
-    # url(r'^auth/login/$', Login.as_view(), name="login"),
-    url(r'^auth/register/$', views.Register.as_view(), name="register"),
-    url(r'^auth/logout/$', login_required(views.Logout.as_view()), name="logout"),
-    url(r'^dashboard/$', login_required(views.Dashboard.as_view()), name="home"),
-    url(r'^service/cnpj/', login_required(views.get_cnpj_json), name="service-cnpj"),
-    url(r'^service/cep/', login_required(views.get_cep_json), name="service-cep"),
+    # path('auth/login/', Login.as_view(), name="login"),
+    path('auth/register/', views.Register.as_view(), name="register"),
+    path('auth/logout/', login_required(views.Logout.as_view()), name="logout"),
+    path('dashboard/', login_required(views.Dashboard.as_view()), name="dashboard"),
+    path('service/cnpj/', login_required(views.get_cnpj_json), name="service-cnpj"),
+    path('service/cep/', login_required(views.get_cep_json), name="service-cep"),
 )

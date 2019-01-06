@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.db import IntegrityError, transaction, connection

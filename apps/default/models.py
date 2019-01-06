@@ -131,22 +131,24 @@ class SeguradoraParametro(BestPraticesModel):
 
 
 class Pedido(BestPraticesModel):
-    valor_bike = models.DecimalField(verbose_name='A partir', max_digits=14, decimal_places=2, blank=True, null=True)
-    is_atendido = models.BooleanField(verbose_name='Até', default=False)
+	usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, blank=True, null=True)
+	valor_bike = models.DecimalField(verbose_name='A partir', max_digits=14, decimal_places=2, blank=True, null=True)
+	is_atendido = models.BooleanField(verbose_name='É atendido ?', default=False)
 
-    class Meta:
-        verbose_name = "Pedido"
+	class Meta:
+		verbose_name = "Pedido"
 
-    def __str__(self):
-        return 'R$: {}'.format(self.valor_bike)
+	def __str__(self):
+		return 'R$: {}'.format(self.valor_bike)
 
 
 class Proposta(BestPraticesModel):
-    seguradora = models.ForeignKey(Seguradora, verbose_name='Seguradora', blank=True, null=True, on_delete=models.DO_NOTHING)
-    preco_seguro = models.DecimalField(verbose_name='Preço do Seguro', max_digits=14, decimal_places=2, blank=True, null=True)
+	usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, blank=True, null=True)
+	seguradora = models.ForeignKey(Seguradora, on_delete=models.DO_NOTHING, verbose_name='Seguradora', blank=True, null=True)
+	preco_seguro = models.DecimalField(verbose_name='Preço do Seguro', max_digits=14, decimal_places=2, blank=True, null=True)
 
-    class Meta:
-        verbose_name = "Proposta"
+	class Meta:
+		verbose_name = "Proposta"
 
-    def __str__(self):
-        return '{} - R$: {}'.format(self.seguradora, self.preco_seguro)
+	def __str__(self):
+		return '{} - R$: {}'.format(self.seguradora, self.preco_seguro)
