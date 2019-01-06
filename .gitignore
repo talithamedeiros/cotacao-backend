@@ -2,13 +2,13 @@
 /db.sqlite3
 db.sqlite3
 .DS_Store
-.env
-*/settings/dev.py
+# */settings/dev.py
 /staticfiles/*
 /mediafiles/*
-/media/*
+#/media/*
 __pycache__/
-.venv
+
+debug.log
 
 # coverage result
 .coverage
@@ -36,6 +36,8 @@ npm-debug.log
 *.map
 
 # General
+.env
+.venv
 /venv/
 /env/
 /output/
