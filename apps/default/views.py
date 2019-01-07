@@ -21,8 +21,8 @@ import numpy as np
 ##################################################
 #				CUSTOM IMPORTS                   #
 ##################################################
-from .models import Usuario
-from .forms import LoginForm, RegisterForm # AUTH FORMS
+from .models import *
+from .forms import *
 import requests
 import re
 from datetime import datetime
@@ -66,7 +66,11 @@ class JSONResponseMixin(object):
 class Register(JSONResponseMixin,View):
     def get(self, request):
         form = RegisterForm
-        return render (request, 'default/register.html', {'form':form})
+
+        if request.user.is_authenticated:
+            return redirect(reverse("dashboard"))
+
+        return render (request, 'account/register.html', {'form':form})
 
     def post(self, request, *args, **kwargs):
         context = {}
@@ -92,19 +96,24 @@ class Register(JSONResponseMixin,View):
                 user.nome = nome
                 user.sobrenome = sobrenome
                 user.is_active =  True
+                user.is_admin =  True
                 user.save()
-                return redirect(reverse_lazy("home"))
+                return redirect(reverse_lazy("dashboard"))
 
             else:
                 form = RegisterForm()
 
-        return render(request, 'default/register.html', {'form': form})
+        return render(request, 'account/register.html', {'form': form})
 
 
 class Login(JSONResponseMixin,View):
     def get(self, request):
         form = LoginForm
-        return render (request, 'default/login.html', {'form':form})
+        
+        if request.user.is_authenticated:
+            return redirect(reverse("dashboard"))
+
+        return render (request, 'account/login.html', {'form':form})
 
     def post(self, request, *args, **kwargs):
         context = {}
@@ -116,17 +125,17 @@ class Login(JSONResponseMixin,View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect(reverse_lazy("home"))
+                    return redirect(reverse_lazy("dashboard"))
                 else:
                     context['error'] = "Usuario não ativo"
-                    return render(request, 'default/login.html',{'form':form,'context':context})
+                    return render(request, 'account/login.html',{'form':form,'context':context})
             else:
                 context['error'] = "Usuário não cadastrado"
-                return render(request, 'default/login.html',{'form':form,'context':context})
+                return render(request, 'account/login.html',{'form':form,'context':context})
         else:
             form = LoginForm()
 
-        return render(request, 'default/login.html', {'form': form})
+        return render(request, 'account/login.html', {'form': form})
 
 
 class Logout(JSONResponseMixin, View):
@@ -146,7 +155,7 @@ class Logout(JSONResponseMixin, View):
 '''
 
 class Dashboard(View):
-    template_name = "dashboard.html"
+    template_name = "dashboard/dashboard.html"
 
     def get(self, request):
 
@@ -173,3 +182,137 @@ def get_cep_json(request):
             headers={'Authorization': 'Token token=055cc8e8b0e25d6b6bb30a6dad8b1932'}
             ).json()
     return JsonResponse(response)
+
+
+'''
+----------------------------------------
+            PARAMETRO
+----------------------------------------
+'''
+class ParametroList(ListView):
+    template_name = "parametro/list.html"
+
+    def get(self, request):
+
+        parametro = SeguradoraParametro.objects.all()
+        context = {'parametro': parametro}
+        return render(request, self.template_name, context)
+
+
+class ParametroCreate(View):
+    template_name = "parametro/create.html"
+
+    def get(self, request):
+        form = SeguradoraParametroForm()
+
+        context = {'form':form}
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form = SeguradoraParametroForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.save()
+
+            return redirect(reverse("parametro-list"))
+
+        context = {'form':form}
+        return render(request, self.template_name, context)
+
+
+class ParametroUpdate(View):
+    template_name = "parametro/update.html"
+
+    def get(self, request, pk):
+        parametro = SeguradoraParametro.objects.get(pk=pk)
+        form = SeguradoraParametroForm(instance=parametro)
+
+        context = {'form':form, 'parametro':parametro}
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk=None):
+        parametro = SeguradoraParametro.objects.get(pk=pk)
+        form = SeguradoraParametroForm(request.POST, request.FILES, instance=parametro)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.save()
+
+            return redirect(reverse("parametro-list"))
+
+        context = {'form':form, 'parametro':parametro}
+        return render(request, self.template_name, context)
+
+
+class ParametroDelete(View):
+    def get(self, request, pk):
+        parametro = SeguradoraParametro.objects.get(pk=pk).delete()
+        return redirect(reverse("parametro-list"))
+
+
+'''
+----------------------------------------
+            SEGURADORA
+----------------------------------------
+'''
+class SeguradoraList(ListView):
+    template_name = "seguradora/list.html"
+
+    def get(self, request):
+
+        seguradora = Seguradora.objects.all()
+        context = {'seguradora': seguradora}
+        return render(request, self.template_name, context)
+
+
+class SeguradoraCreate(View):
+    template_name = "seguradora/create.html"
+
+    def get(self, request):
+        form = SeguradoraForm()
+
+        context = {'form':form}
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form = SeguradoraForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.save()
+
+            return redirect(reverse("seguradora-list"))
+
+        context = {'form':form}
+        return render(request, self.template_name, context)
+
+
+class SeguradoraUpdate(View):
+    template_name = "seguradora/update.html"
+
+    def get(self, request, pk):
+        seguradora = Seguradora.objects.get(pk=pk)
+        form = SeguradoraForm(instance=seguradora)
+
+        context = {'form':form, 'seguradora':seguradora}
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk=None):
+        seguradora = Seguradora.objects.get(pk=pk)
+        form = SeguradoraForm(request.POST, request.FILES, instance=seguradora)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.save()
+
+            return redirect(reverse("seguradora-list"))
+
+        context = {'form':form, 'seguradora':seguradora}
+        return render(request, self.template_name, context)
+
+
+class SeguradoraDelete(View):
+    def get(self, request, pk):
+        seguradora = Seguradora.objects.get(pk=pk).delete()
+        return redirect(reverse("seguradora-list"))

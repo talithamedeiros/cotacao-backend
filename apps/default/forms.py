@@ -13,7 +13,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 ##################################################
 #               CUSTOM IMPORTS                   #
 ##################################################
-from .models import Usuario # MODELS
+from .models import * # MODELS
 ##################################################
 
 
@@ -124,3 +124,36 @@ class RegisterForm(forms.Form):
             END AUTH FORMS
 ---------------------------------------
 '''
+
+
+class SeguradoraParametroForm(forms.ModelForm):
+    
+    class Meta:
+        model = SeguradoraParametro
+        fields = '__all__'
+    
+    def __init__(self, *args, **kwargs):
+        super(SeguradoraParametroForm, self).__init__(*args, **kwargs)
+
+        # GENERAL INFO
+        self.fields['is_apartir'].widget.attrs['class'] = 'custom-control custom-checkbox custom-control-inline'
+        self.fields['is_ate'].widget.attrs['class'] = 'custom-control custom-checkbox custom-control-inline'
+
+        self.fields['a_partir'].widget.attrs['class'] = 'form-control'
+        self.fields['ate'].widget.attrs['class'] = 'form-control'
+
+        self.fields['seguradora'].widget.attrs['class'] = 'form-control'
+        self.fields['taxa_seguro'].widget.attrs['class'] = 'form-control'
+
+
+class SeguradoraForm(forms.ModelForm):
+    
+    class Meta:
+        model = Seguradora
+        fields = '__all__'
+    
+    def __init__(self, *args, **kwargs):
+        super(SeguradoraForm, self).__init__(*args, **kwargs)
+
+        # GENERAL INFO
+        self.fields['name'].widget.attrs['class'] = 'form-control'

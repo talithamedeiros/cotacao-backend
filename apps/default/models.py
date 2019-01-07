@@ -114,20 +114,22 @@ class Seguradora(BestPraticesModel):
 
 
 class SeguradoraParametro(BestPraticesModel):
-    a_partir = models.DecimalField(verbose_name='A partir', max_digits=10, decimal_places=2, blank=True, null=True)
-    ate = models.DecimalField(verbose_name='Até', max_digits=10, decimal_places=2, blank=True, null=True)
-    is_apartir = models.BooleanField(verbose_name='A partir')
-    is_ate = models.BooleanField(verbose_name='Até')
+	a_partir = models.DecimalField(default='0', verbose_name='A partir', max_digits=14, decimal_places=2, blank=True, null=True)
+	ate = models.DecimalField(default='0', verbose_name='Até', max_digits=14, decimal_places=2, blank=True, null=True)
+	is_apartir = models.BooleanField(verbose_name='A partir')
+	is_ate = models.BooleanField(verbose_name='Até')	
+	seguradora = models.ForeignKey(Seguradora, on_delete=models.DO_NOTHING, verbose_name='Seguradora', blank=True, null=True)
+	taxa_seguro = models.DecimalField(verbose_name='Taxa do Seguro', max_digits=14, decimal_places=2, blank=True, null=True)
 
     # is_apartir caso seja TRUE irá desconsiderar o campo 
     # até na leitura e o campo is_ate caso seja TRUE irá 
     # desconsiderar o campo a_partir
 
-    class Meta:
-        verbose_name = "Seguradora Paramentro"
+	class Meta:
+		verbose_name = "Seguradora Paramentro"
 
-    def __str__(self):
-        return 'R$: {} - R$: {}'.format(self.a_partir, self.ate)
+	def __str__(self):
+		return '{} - R$: {} - R$: {}'.format(self.seguradora, self.a_partir, self.ate)
 
 
 class Pedido(BestPraticesModel):

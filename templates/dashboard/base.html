@@ -8,23 +8,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="/static/custom/img/logomarca.png">
-    <title>Projeto</title>
+    <!-- <link rel="shortcut icon" href="/static/custom/img/logomarca.png"> -->
+    <title>Cotação</title>
     <link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/perfect-scrollbar/css/perfect-scrollbar.min.css"/>
     <link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/material-design-icons/css/material-design-iconic-font.min.css"/>
     <link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/jquery.vectormap/jquery-jvectormap-1.2.2.css"/>
     <link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/jqvmap/jqvmap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/datetimepicker/css/bootstrap-datetimepicker.min.css"/>
-    <link rel="stylesheet" href="/static/dashboard/assets/css/app.css" type="text/css" /> {% block css %} {% endblock %}
+    <link rel="stylesheet" href="/static/dashboard/assets/css/app.css" type="text/css" />
+
+    {% block css %} {% endblock %}
 </head>
 
 <body>
-    {% include 'dashboard/includes/preloader.html' %}
-    <!-- #END# Left Sidebar -->
     <div class="be-wrapper be-fixed-sidebar">
         {% include 'dashboard/includes/top_bar.html' %}
         {% block menu %} {% endblock %}
-        <!-- {% include 'dashboard/includes/menu.html' %} -->
         <div class="be-content">
             <div class="main-content container-fluid">
                 {% block content %} {% endblock %}
