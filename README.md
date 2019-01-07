@@ -1,8 +1,6 @@
 COTAÇÃO DE SEGUROS
 =========
 
-# COTACAO-BACKEND #
-
 Bem-vindo ao projeto COTAÇÃO DE SEGUROS.
 
 ### INFO ###
@@ -11,13 +9,11 @@ Bem-vindo ao projeto COTAÇÃO DE SEGUROS.
 
 * Versão: 0.0.1
 
-
 Instalação
 ~~~~~~~~~~
 
 instalação rápida:
 
-::
     git clone https://github.com/ylgnerbecton/cotacao-backend.git
     cd cotacao-backend
     python3 -m venv .env
