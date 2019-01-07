@@ -10,7 +10,7 @@ from rest_auth.registration.views import SocialLoginView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
 from django.db import IntegrityError, transaction, connection
 
 from oauth2_provider.models import Application, AccessToken
@@ -32,9 +32,11 @@ import hashlib
 import json
 import re
 
+from decimal import Decimal
+
 from apps.message_core.views import EmailThread, Sms
 from apps.api_rest import serializers
-from apps.default.models import Usuario, Pedido, Proposta
+from apps.default.models import Usuario, Pedido, Proposta, SeguradoraParametro
 
 
 class FacebookLogin(SocialLoginView):
@@ -177,6 +179,28 @@ def get_valor_seguro(porcentagem, valor_bike):
     return (valor_bike * porcentagem) / 100
 
 
+def save_proposta(seguradora, user, preco_seguro):
+    json = {}
+    proposta = Proposta()
+    proposta.seguradora = seguradora
+    proposta.usuario = user
+    proposta.preco_seguro = preco_seguro
+    proposta.save()
+
+    json['seguradora'] = seguradora.name
+    json['preco_seguro'] = str(Decimal(preco_seguro))
+
+    return json
+
+
+def save_array_propostas(query_consulta, user, valor_bike):
+    retorno = None
+    if query_consulta:
+        retorno = []
+        for child in query_consulta:
+            retorno.append(save_proposta(child.seguradora, user, get_valor_seguro(child.taxa_seguro, Decimal(valor_bike))))
+    return retorno
+
 
 class CotarSeguro(generics.GenericAPIView):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
@@ -186,7 +210,7 @@ class CotarSeguro(generics.GenericAPIView):
     def post(self, request, format=None):
         serializer = serializers.CotacaoSeguroSerializer(data=request.data)
         if serializer.is_valid():
-
+            message = {}    
             valor_bike = serializer.data.get('valor_bike')
 
             pedido = Pedido()
@@ -195,27 +219,41 @@ class CotarSeguro(generics.GenericAPIView):
             pedido.save()
             
             valor_seguro = 0
-            is_atendido = True
+            is_atendido = False
+            retorno_propostas = []
+            retorno_funcao = None
 
-            if '2000.00' <= valor_bike and '4999.99' >= valor_bike:
-                valor_seguro = get_valor_seguro(2, float(valor_bike))
-            elif '5000.00' <= valor_bike and '8999.99' >= valor_bike:
-                valor_seguro = get_valor_seguro(5, float(valor_bike))
-            elif '9000.00' <= valor_bike and '11999.99' >= valor_bike:
-                valor_seguro = get_valor_seguro(10, float(valor_bike))
-            elif '12000.00' >= valor_bike:
-                valor_seguro = get_valor_seguro(18, float(valor_bike))
-            else:
-                message = "2"
-                is_atendido = False
+            query_consulta = SeguradoraParametro.objects.filter(Q(a_partir__lte=valor_bike, ate__gte=valor_bike))
 
-            if valor_seguro > 0:
-                proposta = Proposta()
-                proposta.usuario = self.request.user
-                proposta.preco_seguro = valor_seguro
-                proposta.save()
+            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike)
+
+            if retorno_funcao != None:
+                is_atendido = True
+                retorno_propostas += retorno_funcao
+            
+            query_consulta = SeguradoraParametro.objects.filter(Q(a_partir__lte=valor_bike), Q(ate__isnull=True) | Q(ate=float(0)), Q(is_apartir=True))
+            
+            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike)
+
+            if retorno_funcao != None:
+                is_atendido = True
+                retorno_propostas += retorno_funcao
+
+            query_consulta = SeguradoraParametro.objects.filter(Q(ate__gte=valor_bike), Q(a_partir__isnull=True) | Q(a_partir=float(0)), Q(is_ate=True))
+
+            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike)
+
+            if retorno_funcao != None:
+                is_atendido = True
+                retorno_propostas += retorno_funcao
+
+            retorno_propostas = json.dumps(retorno_propostas)
+
+            if is_atendido == False:
+                message['mensagem'] = 'Infelizmente não temos nenhuma proposta para você!'
+                return Response(message, status=201)
 
             pedido = Pedido.objects.filter(pk=pedido.pk).update(is_atendido=is_atendido)
 
-            return Response(serializer.data, status=201)
+            return Response(retorno_propostas, status=201)
         return Response(serializer.errors, status=400)

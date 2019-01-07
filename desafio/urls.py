@@ -24,7 +24,7 @@ from django.views.generic import RedirectView
 admin.site.site_header = settings.ADMIN_SITE_HEADER
 
 urlpatterns = [
-    path('', RedirectView.as_view(pattern_name='login', permanent=False)),
+    path('', RedirectView.as_view(pattern_name='auth-login', permanent=False)),
 
     # ADMIN
     # path('admin/', include('smuggler.urls')),

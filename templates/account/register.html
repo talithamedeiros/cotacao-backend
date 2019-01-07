@@ -1,0 +1,53 @@
+{% extends 'account/base.html' %} 
+
+{%load staticfiles%}
+
+{% block content %}
+<div class="card card-border-color card-border-color-primary">
+    <div class="card-header">
+        <img src="/static/custom/img/logomarca.png" alt="logo" height="68" class="logo-img">
+        <span class="splash-description">Por favor, insira suas informações de usuário.</span>
+    </div>
+    <div class="card-body" style="padding: 5px 30px 15px;">
+        <form id="form-register" class="p-t-15" method="POST" role="form">{% csrf_token %} 
+            <div class="login-form">
+                <div class="form-group">
+                  <label>Nome</label>
+                  <input type="text" id="{{ form.nome.id_for_label }}" name="{{ form.nome.html_name }}" placeholder="" class="form-control" required="">
+                </div>
+                <div class="form-group">
+                  <label>Sobrenome</label>
+                  <input type="text" id="{{ form.sobrenome.id_for_label }}" name="{{ form.sobrenome.html_name }}" placeholder="" class="form-control" required="">
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="text" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" placeholder="" class="form-control" required="">
+                </div>
+                <div class="form-group">
+                  <label>Senha</label>
+                  <input type="password" id="{{ form.password.id_for_label }}" name="{{ form.password.html_name }}" placeholder="" class="form-control" required="">
+                </div>
+                <p>{{ context.error}}</p>
+                <!-- <div class="form-group row login-tools">
+                    <div class="col-6 login-remember">
+                    </div>
+                    <div class="col-6 login-forgot-password">
+                        <a href="{% url 'auth-login' %}">Já tenho conta?</a>
+                    </div>
+                </div> -->
+                <div class="form-group row login-submit">
+                    <div class="col-6">
+                        <a href="{% url 'auth-login' %}" class="btn btn-secondary btn-xl">Voltar</a>
+                    </div>
+                    <div class="col-6">
+                        <button data-dismiss="modal" type="submit" class="btn btn-primary btn-xl">Cadastrar</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 
+{% block javascript %}
+{% endblock %}

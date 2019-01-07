@@ -1,0 +1,89 @@
+{% extends 'dashboard/base.html' %} 
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/datetimepicker/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/select2/css/select2.min.css"/>
+<link rel="stylesheet" type="text/css" href="/static/dashboard/assets/lib/bootstrap-slider/css/bootstrap-slider.min.css"/>
+{% endblock %} 
+
+{% block menu %}
+{% include 'dashboard/includes/menu.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-border-color card-border-color-primary">
+            <div class="card-header card-header-divider">Editar parâmetro
+                <span class="card-subtitle">Após realizar as alterações lembre-se de salvar.</span>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                    <div class="form-group row">
+                        <div class="col-sm-8">
+                            <label>Seguradora:</label>
+                            {{form.seguradora}}
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Taxa do seguro:</label>
+                            {{form.taxa_seguro}}
+                        </div>
+                        <div class="col-sm-1">
+                            <label>A partir ?</label><br>
+                            {{form.is_apartir}}
+                        </div>
+                        <div class="col-sm-1">
+                            <label>Até?</label><br>
+                            {{form.is_ate}}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <label>A partir de:</label>
+                            {{form.a_partir}}
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Até:</label>
+                            {{form.ate}}
+                        </div>
+                    </div>
+                    <div class="form-group row login-submit">
+                        <div class="col-sm-6">
+                            <a class="btn btn-secondary btn-xl" href="{% url 'parametro-list' %}">Cancelar</a>
+                        </div>
+                        <div class="col-sm-6">
+                            <button type="submit" class="btn btn-primary btn-xl">Salvar</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} 
+
+{% block javascript %}
+<script src="/static/dashboard/assets/lib/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<script src="/static/dashboard/assets/lib/jquery.nestable/jquery.nestable.js" type="text/javascript"></script>
+<script src="/static/dashboard/assets/lib/moment.js/min/moment.min.js" type="text/javascript"></script>
+<script src="/static/dashboard/assets/lib/datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<script src="/static/dashboard/assets/lib/select2/js/select2.min.js" type="text/javascript"></script>
+<script src="/static/dashboard/assets/lib/select2/js/select2.full.min.js" type="text/javascript"></script>
+<script src="/static/dashboard/assets/lib/bootstrap-slider/bootstrap-slider.min.js" type="text/javascript"></script>
+<script src="/static/dashboard/assets/js/app-form-elements.js" type="text/javascript"></script>
+<script src="/static/dashboard/theme/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+<script src="/static/dashboard/theme/plugins/jquery-validation/jquery.validate.js"></script>
+<script src="/static/dashboard/src/js/lib/jquery-cpf-cnpj/jquery.cpfcnpj.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //initialize the javascript
+        App.init();
+        App.formElements();
+    });
+
+</script>
+
+{% endblock %}
