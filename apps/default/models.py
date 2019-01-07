@@ -148,6 +148,7 @@ class Proposta(BestPraticesModel):
 	usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, blank=True, null=True)
 	seguradora = models.ForeignKey(Seguradora, on_delete=models.DO_NOTHING, verbose_name='Seguradora', blank=True, null=True)
 	preco_seguro = models.DecimalField(verbose_name='Preço do Seguro', max_digits=14, decimal_places=2, blank=True, null=True)
+	pedido = models.ForeignKey(Pedido, on_delete=models.DO_NOTHING, blank=True, null=True)
 
 	class Meta:
 		verbose_name = "Proposta"
