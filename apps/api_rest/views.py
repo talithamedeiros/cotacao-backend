@@ -179,12 +179,13 @@ def get_valor_seguro(porcentagem, valor_bike):
     return (valor_bike * porcentagem) / 100
 
 
-def save_proposta(seguradora, user, preco_seguro):
+def save_proposta(seguradora, user, preco_seguro, pedido):
     json = {}
     proposta = Proposta()
     proposta.seguradora = seguradora
     proposta.usuario = user
     proposta.preco_seguro = preco_seguro
+    proposta.pedido = pedido
     proposta.save()
 
     json['seguradora'] = seguradora.name
@@ -193,12 +194,12 @@ def save_proposta(seguradora, user, preco_seguro):
     return json
 
 
-def save_array_propostas(query_consulta, user, valor_bike):
+def save_array_propostas(query_consulta, user, valor_bike, pedido):
     retorno = None
     if query_consulta:
         retorno = []
         for child in query_consulta:
-            retorno.append(save_proposta(child.seguradora, user, get_valor_seguro(child.taxa_seguro, Decimal(valor_bike))))
+            retorno.append(save_proposta(child.seguradora, user, get_valor_seguro(child.taxa_seguro, Decimal(valor_bike)), pedido))
     return retorno
 
 
@@ -225,7 +226,7 @@ class CotarSeguro(generics.GenericAPIView):
 
             query_consulta = SeguradoraParametro.objects.filter(Q(a_partir__lte=valor_bike, ate__gte=valor_bike))
 
-            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike)
+            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike, pedido)
 
             if retorno_funcao != None:
                 is_atendido = True
@@ -233,7 +234,7 @@ class CotarSeguro(generics.GenericAPIView):
             
             query_consulta = SeguradoraParametro.objects.filter(Q(a_partir__lte=valor_bike), Q(ate__isnull=True) | Q(ate=float(0)), Q(is_apartir=True))
             
-            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike)
+            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike, pedido)
 
             if retorno_funcao != None:
                 is_atendido = True
@@ -241,7 +242,7 @@ class CotarSeguro(generics.GenericAPIView):
 
             query_consulta = SeguradoraParametro.objects.filter(Q(ate__gte=valor_bike), Q(a_partir__isnull=True) | Q(a_partir=float(0)), Q(is_ate=True))
 
-            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike)
+            retorno_funcao = save_array_propostas(query_consulta, self.request.user, valor_bike, pedido)
 
             if retorno_funcao != None:
                 is_atendido = True
