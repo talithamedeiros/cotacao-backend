@@ -77,9 +77,9 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'material',
-    'material.frontend',
-    'material.admin',
+    # 'material',
+    # 'material.frontend',
+    # 'material.admin',
     'nested_admin',
 ]
 
