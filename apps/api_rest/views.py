@@ -251,7 +251,7 @@ class CotarSeguro(generics.GenericAPIView):
             retorno_propostas = json.dumps(retorno_propostas)
 
             if is_atendido == False:
-                message['mensagem'] = 'Infelizmente não temos nenhuma proposta para você!'
+                message['mensagem'] = 'O valor da BIKE é abaixo do limite mínimo aceito pela seguradora.'
                 return Response(message, status=201)
 
             pedido = Pedido.objects.filter(pk=pedido.pk).update(is_atendido=is_atendido)
